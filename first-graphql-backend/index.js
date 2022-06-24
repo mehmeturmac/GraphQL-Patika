@@ -1,10 +1,18 @@
-const { ApolloServer, gql } = require('apollo-server');
-const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
-const { withFilter } = require('graphql-subscriptions');
+const { ApolloServer, gql } = require('apollo-server-express');
+const { createServer } = require('http');
+const express = require('express');
+const { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { WebSocketServer } = require('ws');
+const { useServer } = require('graphql-ws/lib/use/ws');
+const { PubSub, withFilter } = require('graphql-subscriptions');
 const { v4: uuidv4 } = require('uuid');
 
 const { events, locations, users, participants } = require('./data.json');
 const pubsub = require('./pubsub');
+
+const app = express();
+const httpServer = createServer(app);
 
 const typeDefs = gql`
   # Event
@@ -454,13 +462,43 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: { pubsub },
-  plugins: [ApolloServerPluginLandingPageGraphQLPlayground({})],
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
 });
 
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
+const serverCleanup = useServer({ schema }, wsServer);
+
+const server = new ApolloServer({
+  schema,
+  csrfPrevention: true,
+  cache: 'bounded',
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    ApolloServerPluginLandingPageGraphQLPlayground({}),
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
 });
+
+async function serverStart() {
+  await server.start();
+  server.applyMiddleware({ app });
+
+  const PORT = 4000;
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 Query endpoint ready at http://localhost:${PORT}${server.graphqlPath}`);
+    console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}${server.graphqlPath}`);
+  });
+}
+
+serverStart();
