@@ -1,18 +1,14 @@
 const { ApolloServer, gql } = require('apollo-server-express');
-const { createServer } = require('http');
-const express = require('express');
 const { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
+const express = require('express');
+const { createServer } = require('http');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
-const { WebSocketServer } = require('ws');
-const { useServer } = require('graphql-ws/lib/use/ws');
-const { PubSub, withFilter } = require('graphql-subscriptions');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
+const { execute, subscribe } = require('graphql');
+
+const { withFilter } = require('graphql-subscriptions');
 const { v4: uuidv4 } = require('uuid');
-
 const { events, locations, users, participants } = require('./data.json');
-const pubsub = require('./pubsub');
-
-const app = express();
-const httpServer = createServer(app);
 
 const typeDefs = gql`
   # Event
@@ -462,43 +458,56 @@ const resolvers = {
   },
 };
 
-const schema = makeExecutableSchema({ typeDefs, resolvers });
+(async function startApolloServer(typeDefs, resolvers) {
+  const app = express();
+  const httpServer = createServer(app);
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const pubsub = require('./pubsub');
 
-const wsServer = new WebSocketServer({
-  server: httpServer,
-  path: '/graphql',
-});
+  const server = new ApolloServer({
+    schema,
+    context: { pubsub },
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      ApolloServerPluginLandingPageGraphQLPlayground({}),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              subscriptionServer.close();
+            },
+          };
+        },
+      },
+    ],
+  });
 
-const serverCleanup = useServer({ schema }, wsServer);
-
-const server = new ApolloServer({
-  schema,
-  csrfPrevention: true,
-  cache: 'bounded',
-  plugins: [
-    ApolloServerPluginDrainHttpServer({ httpServer }),
-    ApolloServerPluginLandingPageGraphQLPlayground({}),
+  const subscriptionServer = SubscriptionServer.create(
     {
-      async serverWillStart() {
+      schema,
+      execute,
+      subscribe,
+      async onConnect() {
+        console.log('Connected!');
         return {
-          async drainServer() {
-            await serverCleanup.dispose();
-          },
+          pubsub,
         };
       },
+      onDisconnect() {
+        console.log('Disconnected!');
+      },
     },
-  ],
-});
+    {
+      server: httpServer,
+      path: server.graphqlPath,
+    }
+  );
 
-async function serverStart() {
   await server.start();
   server.applyMiddleware({ app });
 
   const PORT = 4000;
   httpServer.listen(PORT, () => {
-    console.log(`🚀 Query endpoint ready at http://localhost:${PORT}${server.graphqlPath}`);
-    console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}${server.graphqlPath}`);
+    console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
   });
-}
-
-serverStart();
+})(typeDefs, resolvers);
