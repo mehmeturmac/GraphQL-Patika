@@ -1,7 +1,7 @@
 import React from 'react';
 
 function NewPost() {
-  return <div>NewPost</div>;
+  return <div>NewEvent</div>;
 }
 
 export default NewPost;
