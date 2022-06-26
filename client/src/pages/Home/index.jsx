@@ -1,61 +1,31 @@
-import React from 'react';
-
-import { Avatar, List, Skeleton } from 'antd';
-
-const data = [
-  {
-    gender: 'female',
-    name: {
-      title: 'Miss',
-      first: 'Carolina',
-      last: 'Casper',
-    },
-    email: 'carolina.casper@example.com',
-    picture: {
-      large: 'https://randomuser.me/api/portraits/women/56.jpg',
-      medium: 'https://randomuser.me/api/portraits/med/women/56.jpg',
-      thumbnail: 'https://randomuser.me/api/portraits/thumb/women/56.jpg',
-    },
-    nat: 'DE',
-  },
-  {
-    gender: 'female',
-    name: {
-      title: 'Miss',
-      first: 'Carolina',
-      last: 'Casper',
-    },
-    email: 'carolina.casper@example.com',
-    picture: {
-      large: 'https://randomuser.me/api/portraits/women/56.jpg',
-      medium: 'https://randomuser.me/api/portraits/med/women/56.jpg',
-      thumbnail: 'https://randomuser.me/api/portraits/thumb/women/56.jpg',
-    },
-    nat: 'DE',
-  },
-];
+import { useQuery } from '@apollo/client';
+import { List, Spin } from 'antd';
+import { GET_EVENTS } from './queries';
 
 function Home() {
+  const { loading, error, data } = useQuery(GET_EVENTS);
+
+  if (loading || !data) {
+    return (
+      <div className="loading">
+        <Spin size="middle" tip="Loading..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <div>
-      <List
-        className="demo-loadmore-list"
-        loading={false}
-        itemLayout="horizontal"
-        // loadMore={loadMore}
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            <Skeleton avatar title={false} loading={item.loading} active>
-              <List.Item.Meta
-                avatar={<Avatar src={item.picture.large} />}
-                title={<a href="https://ant.design">{item.name?.last}</a>}
-                description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-              />
-            </Skeleton>
+      <List className="demo-loadmore-list" itemLayout="horizontal">
+        {data.events.map((item, i) => (
+          <List.Item key={i}>
+            <List.Item.Meta title={item.title} description={item.desc} />
           </List.Item>
-        )}
-      />
+        ))}
+      </List>
     </div>
   );
 }

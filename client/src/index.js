@@ -1,6 +1,5 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css'; // 'antd/dist/antd.css' is not working with react5.0 => https://github.com/ant-design/ant-design/issues/33327
 import './index.css';
 import App from './components/App';
 
