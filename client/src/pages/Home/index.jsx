@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { List, Spin } from 'antd';
 import { GET_EVENTS, EVENTS_SUBS } from './queries';
+import styles from './styles.module.css';
 
 function Home() {
   const { loading, error, data, subscribeToMore } = useQuery(GET_EVENTS);
@@ -21,7 +22,7 @@ function Home() {
 
   if (loading || !data) {
     return (
-      <div className="loading">
+      <div className={styles.loading}>
         <Spin size="middle" tip="Loading..." />
       </div>
     );

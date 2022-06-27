@@ -16,6 +16,7 @@ export const GET_EVENT = gql`
     }
   }
 `;
+
 // Fragment
 const participantsFragment = gql`
   fragment ParticipantsFragment on Participant {

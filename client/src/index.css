@@ -27,8 +27,6 @@ body {
   color: #f8f8f8;
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.ant-form-item {
+  margin-bottom: 12px;
 }

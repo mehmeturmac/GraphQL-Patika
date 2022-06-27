@@ -1,7 +1,12 @@
-import React from 'react';
+import NewEventForm from './NewEventForm';
 
 function NewPost() {
-  return <div>NewEvent</div>;
+  return (
+    <div>
+      <h1>New Event</h1>
+      <NewEventForm />
+    </div>
+  );
 }
 
 export default NewPost;
