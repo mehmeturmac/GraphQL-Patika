@@ -1,10 +1,23 @@
+import { useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import { List, Spin } from 'antd';
-import { GET_EVENTS } from './queries';
 import { Link } from 'react-router-dom';
+import { List, Spin } from 'antd';
+import { GET_EVENTS, EVENTS_SUBS } from './queries';
 
 function Home() {
-  const { loading, error, data } = useQuery(GET_EVENTS);
+  const { loading, error, data, subscribeToMore } = useQuery(GET_EVENTS);
+
+  useEffect(() => {
+    subscribeToMore({
+      document: EVENTS_SUBS,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        return {
+          events: [subscriptionData.data.eventCreated, ...prev.events],
+        };
+      },
+    });
+  }, [subscribeToMore]);
 
   if (loading || !data) {
     return (
@@ -20,13 +33,15 @@ function Home() {
 
   return (
     <div>
-      <List className="demo-loadmore-list" itemLayout="horizontal">
-        {data.events.map((item, i) => (
-          <List.Item key={i}>
+      <List
+        itemLayout="horizontal"
+        dataSource={data.events}
+        renderItem={(item) => (
+          <List.Item>
             <List.Item.Meta title={<Link to={`/event/${item.id}`}>{item.title}</Link>} description={`${item.desc.substring(0, 400)}...`} />
           </List.Item>
-        ))}
-      </List>
+        )}
+      />
     </div>
   );
 }

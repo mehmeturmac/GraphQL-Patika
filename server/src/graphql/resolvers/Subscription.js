@@ -21,7 +21,7 @@ const Subscription = {
     subscribe: (_, __, { pubsub }) => {
       setTimeout(() => {
         pubsub.publish('eventCount', { eventCount: events.length });
-      });
+      }, 100);
       return pubsub.asyncIterator('eventCount');
     },
   },
@@ -40,7 +40,7 @@ const Subscription = {
     subscribe: (_, __, { pubsub }) => {
       setTimeout(() => {
         pubsub.publish('locationCount', { locationCount: locations.length });
-      });
+      }, 100);
       return pubsub.asyncIterator('locationCount');
     },
   },
@@ -59,14 +59,19 @@ const Subscription = {
     subscribe: (_, __, { pubsub }) => {
       setTimeout(() => {
         pubsub.publish('userCount', { userCount: users.length });
-      });
+      }, 100);
       return pubsub.asyncIterator('userCount');
     },
   },
 
   // Participant
   participantCreated: {
-    subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('participantCreated'),
+    subscribe: withFilter(
+      (_, __, { pubsub }) => pubsub.asyncIterator('participantCreated'),
+      (payload, variables) => {
+        return variables.event_id ? payload.participantCreated.event_id === variables.event_id : true;
+      }
+    ),
   },
   participantUpdated: {
     subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('participantUpdated'),
@@ -78,7 +83,7 @@ const Subscription = {
     subscribe: (_, __, { pubsub }) => {
       setTimeout(() => {
         pubsub.publish('participantCount', { participantCount: participants.length });
-      });
+      }, 100);
       return pubsub.asyncIterator('participantCount');
     },
   },

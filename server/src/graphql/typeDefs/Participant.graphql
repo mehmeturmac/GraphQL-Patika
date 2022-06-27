@@ -2,6 +2,8 @@ type Participant {
   id: ID!
   user_id: ID!
   event_id: ID!
+  user: User!
+  event: Event!
 }
 
 input createParticipant {
@@ -27,7 +29,7 @@ type Mutation {
 }
 
 type Subscription {
-  participantCreated: Participant!
+  participantCreated(event_id: ID): Participant!
   participantUpdated: Participant!
   participantDeleted: Participant!
   participantCount: Int!

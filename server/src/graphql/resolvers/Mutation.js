@@ -8,7 +8,7 @@ const Mutation = {
       id: uuidv4(),
       ...data,
     };
-    events.push(event);
+    events.unshift(event); //events.push(event);
     pubsub.publish('eventCreated', { eventCreated: event });
     pubsub.publish('eventCount', { eventCount: events.length });
     return event;

@@ -1,5 +1,6 @@
 body {
   background-color: #282c34;
+  margin-top: 3px;
 }
 
 .ant-menu-item:hover::after {
