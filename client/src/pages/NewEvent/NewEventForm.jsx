@@ -14,7 +14,7 @@ function NewEventForm() {
 
   const handleSubmit = async (values) => {
     try {
-      message.loading('Saving..', 8);
+      message.loading('Saving...', 8);
       await saveEvent({
         variables: {
           data: {
@@ -32,18 +32,13 @@ function NewEventForm() {
       message.success('Event saved!', 4);
     } catch (e) {
       console.log(e);
+      message.destroy();
       message.error('Event not saved!', 6);
     }
   };
 
   return (
-    <Form
-      name="basic"
-      initialValues={{ remember: true }}
-      onFinish={handleSubmit}
-      //onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
+    <Form name="basic" initialValues={{ remember: true }} onFinish={handleSubmit} autoComplete="off">
       <Form.Item name="title">
         <Input disabled={loading} placeholder="Title" size="large" />
       </Form.Item>

@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { Spin, Divider } from 'antd';
 import { GET_EVENT } from './queries';
-import Participants from './Participants';
+import Participants from './Participants/ParticipantsList';
 
 function Event() {
   const { id } = useParams();
@@ -15,7 +15,7 @@ function Event() {
   if (loading || !data) {
     return (
       <div className="loading">
-        <Spin size="middle" tip="Loading..." />
+        <Spin delay={300} size="middle" tip="Loading..." />
       </div>
     );
   }

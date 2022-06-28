@@ -17,6 +17,15 @@ export const GET_EVENT = gql`
   }
 `;
 
+export const GET_USERS = gql`
+  query {
+    users {
+      id
+      username
+    }
+  }
+`;
+
 // Fragment
 const participantsFragment = gql`
   fragment ParticipantsFragment on Participant {
@@ -39,10 +48,19 @@ export const GET_PARTICIPANTS = gql`
 `;
 
 export const PARTICIPANTS_SUBS = gql`
-  subscription participantCreated($event_id: ID) {
-    participantCreated(event_id: $event_id) {
+  subscription participantCreated($id: ID) {
+    participantCreated(event_id: $id) {
       ...ParticipantsFragment
     }
   }
   ${participantsFragment}
+`;
+
+export const NEW_PARTICIPANT = gql`
+  mutation createParticipant($data: createParticipant!) {
+    createParticipant(data: $data) {
+      user_id
+      event_id
+    }
+  }
 `;

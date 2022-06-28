@@ -23,7 +23,7 @@ function Home() {
   if (loading || !data) {
     return (
       <div className={styles.loading}>
-        <Spin size="middle" tip="Loading..." />
+        <Spin delay={300} size="middle" tip="Loading..." />
       </div>
     );
   }

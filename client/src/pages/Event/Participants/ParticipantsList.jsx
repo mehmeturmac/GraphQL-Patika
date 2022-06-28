@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { Button, Divider, List } from 'antd';
 import styles from './styles.module.css';
-import { GET_PARTICIPANTS, PARTICIPANTS_SUBS } from './queries';
+import { GET_PARTICIPANTS, PARTICIPANTS_SUBS } from '../queries';
+import NewParticipantForm from './NewParticipantForm';
 
 function Participants({ event_id }) {
   const [btnIsVisible, setBtnIsVisible] = useState(true);
@@ -37,7 +38,7 @@ function Participants({ event_id }) {
 
   return (
     <div>
-      <Divider>⮟ Participants: ⮟ </Divider>
+      <Divider>⮟ Participants ⮟ </Divider>
       {btnIsVisible && (
         <div className={styles.showParticipantsBtn}>
           <Button loading={loading} onClick={() => getParticipants()}>
@@ -46,15 +47,18 @@ function Participants({ event_id }) {
         </div>
       )}
       {!loading && data && (
-        <List
-          itemLayout="horizontal"
-          dataSource={data.event.participants}
-          renderItem={(item) => (
-            <List.Item>
-              <List.Item.Meta title={`User: ${item.user.username}`} description={`Email: ${item.user.email}`} />
-            </List.Item>
-          )}
-        />
+        <>
+          <List
+            itemLayout="horizontal"
+            dataSource={data.event.participants}
+            renderItem={(item) => (
+              <List.Item>
+                <List.Item.Meta title={`User: ${item.user.username}`} description={`Email: ${item.user.email}`} />
+              </List.Item>
+            )}
+          />
+          <NewParticipantForm event_id={event_id} />
+        </>
       )}
     </div>
   );
