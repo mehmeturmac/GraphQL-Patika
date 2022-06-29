@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 export const GET_EVENT = gql`
   query getEvent($id: ID!) {
     event(id: $id) {
-      id
+      _id
       title
       desc
       date
@@ -20,7 +20,7 @@ export const GET_EVENT = gql`
 export const GET_USERS = gql`
   query {
     users {
-      id
+      _id
       username
     }
   }
@@ -49,7 +49,7 @@ export const GET_PARTICIPANTS = gql`
 
 export const PARTICIPANTS_SUBS = gql`
   subscription participantCreated($id: ID) {
-    participantCreated(event_id: $id) {
+    participantCreated(event: $id) {
       ...ParticipantsFragment
     }
   }
@@ -59,8 +59,7 @@ export const PARTICIPANTS_SUBS = gql`
 export const NEW_PARTICIPANT = gql`
   mutation createParticipant($data: createParticipant!) {
     createParticipant(data: $data) {
-      user_id
-      event_id
+      _id
     }
   }
 `;

@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 // Fragment
 const eventsFragment = gql`
   fragment EventsFragment on Event {
-    id
+    _id
     title
     desc
   }

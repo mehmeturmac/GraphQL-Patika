@@ -1,21 +1,19 @@
-const { events, locations, users, participants } = require('../../data.json');
-
 const Query = {
   // Event
-  events: () => events,
-  event: (_, args) => events.find((event) => event.id == args.id),
+  events: async (_, __, { db }) => await db.Event.find().sort({ _id: -1 }),
+  event: async (_, args, { db }) => await db.Event.findById(args.id),
 
   // Location
-  locations: () => locations,
-  location: (_, args) => locations.find((location) => location.id == args.id),
-
-  // User
-  users: () => users,
-  user: (_, args) => users.find((user) => user.id == args.id),
+  locations: async (_, __, { db }) => await db.Location.find(),
+  location: async (_, args, { db }) => await db.Location.findById(args.id),
 
   // Participant
-  participants: () => participants,
-  participant: (_, args) => participants.find((participant) => participant.id == args.id),
+  participants: async (_, __, { db }) => await db.Participant.find(),
+  participant: async (_, args, { db }) => await db.Participant.findById(args.id),
+
+  // User
+  users: async (_, __, { db }) => await db.User.find(),
+  user: async (_, args, { db }) => await db.User.findById(args.id),
 };
 
 module.exports.Query = Query;

@@ -39,7 +39,7 @@ function Home() {
         dataSource={data.events}
         renderItem={(item) => (
           <List.Item>
-            <List.Item.Meta title={<Link to={`/event/${item.id}`}>{item.title}</Link>} description={`${item.desc.substring(0, 400)}...`} />
+            <List.Item.Meta title={<Link to={`/event/${item._id}`}>{item.title}</Link>} description={`${item.desc.substring(0, 400)}...`} />
           </List.Item>
         )}
       />

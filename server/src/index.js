@@ -15,9 +15,26 @@ const pubsub = require('./pubsub');
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
+const db = require('./db');
+db();
+
+// Models
+const Event = require('./models/Event');
+const Location = require('./models/Location');
+const Participant = require('./models/Participant');
+const User = require('./models/User');
+
 const server = new ApolloServer({
   schema,
-  context: { pubsub },
+  context: {
+    pubsub,
+    db: {
+      Event,
+      Location,
+      Participant,
+      User,
+    },
+  },
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
     ApolloServerPluginLandingPageGraphQLPlayground({}),
@@ -42,6 +59,12 @@ const subscriptionServer = SubscriptionServer.create(
       console.log('Connected!');
       return {
         pubsub,
+        db: {
+          Event,
+          Location,
+          Participant,
+          User,
+        },
       };
     },
     onDisconnect() {

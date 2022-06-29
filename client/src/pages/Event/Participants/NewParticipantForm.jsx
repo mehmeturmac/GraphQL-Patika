@@ -6,7 +6,7 @@ import styles from './styles.module.css';
 
 const { Option } = Select;
 
-function NewParticipantForm(event_id) {
+function NewParticipantForm(event) {
   const { loading: users_loading, data: users_data } = useQuery(GET_USERS);
   const [saveParticipant, { loading }] = useMutation(NEW_PARTICIPANT);
 
@@ -18,8 +18,8 @@ function NewParticipantForm(event_id) {
       await saveParticipant({
         variables: {
           data: {
-            user_id: values.user_id,
-            event_id: event_id.event_id,
+            ...values,
+            event: event.event,
           },
         },
       });
@@ -36,7 +36,7 @@ function NewParticipantForm(event_id) {
   return (
     <Form name="basic" className={styles.formCenter} initialValues={{ remember: true }} layout="inline" ref={formRef} onFinish={handleSubmit} autoComplete="off">
       <Divider>⮟ New Participant ⮟ </Divider>
-      <Form.Item name="user_id">
+      <Form.Item name="user">
         <Select
           disabled={users_loading || loading}
           loading={users_loading}
@@ -49,7 +49,7 @@ function NewParticipantForm(event_id) {
           {!users_loading &&
             users_data &&
             users_data.users.map((user) => (
-              <Option key={user.id} value={user.id}>
+              <Option key={user._id} value={user._id}>
                 {user.username}
               </Option>
             ))}

@@ -5,11 +5,11 @@ import styles from './styles.module.css';
 import { GET_PARTICIPANTS, PARTICIPANTS_SUBS } from '../queries';
 import NewParticipantForm from './NewParticipantForm';
 
-function Participants({ event_id }) {
+function Participants({ event }) {
   const [btnIsVisible, setBtnIsVisible] = useState(true);
 
   const [getParticipants, { called, loading, data, subscribeToMore }] = useLazyQuery(GET_PARTICIPANTS, {
-    variables: { id: event_id },
+    variables: { id: event },
   });
 
   useEffect(() => {
@@ -57,7 +57,7 @@ function Participants({ event_id }) {
               </List.Item>
             )}
           />
-          <NewParticipantForm event_id={event_id} />
+          <NewParticipantForm event={event} />
         </>
       )}
     </div>

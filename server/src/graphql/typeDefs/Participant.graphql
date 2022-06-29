@@ -1,19 +1,17 @@
 type Participant {
-  id: ID!
-  user_id: ID!
-  event_id: ID!
+  _id: ID!
   user: User!
   event: Event!
 }
 
 input createParticipant {
-  user_id: ID!
-  event_id: ID!
+  user: ID!
+  event: ID!
 }
 
 input updateParticipant {
-  user_id: ID
-  event_id: ID
+  user: ID
+  event: ID
 }
 
 type Query {
@@ -29,7 +27,7 @@ type Mutation {
 }
 
 type Subscription {
-  participantCreated(event_id: ID): Participant!
+  participantCreated(event: ID): Participant!
   participantUpdated: Participant!
   participantDeleted: Participant!
   participantCount: Int!

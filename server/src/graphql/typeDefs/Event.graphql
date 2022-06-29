@@ -1,12 +1,10 @@
 type Event {
-  id: ID!
+  _id: ID!
   title: String!
   desc: String!
   date: String!
   from: String!
   to: String!
-  location_id: ID!
-  user_id: ID!
   location: Location!
   user: User!
   participants: [Participant!]!
@@ -18,8 +16,8 @@ input createEvent {
   date: String!
   from: String!
   to: String!
-  location_id: ID!
-  user_id: ID!
+  location: ID!
+  user: ID!
 }
 
 input updateEvent {
@@ -28,8 +26,8 @@ input updateEvent {
   date: String
   from: String
   to: String
-  location_id: ID
-  user_id: ID
+  location: ID
+  user: ID
 }
 
 type Query {
@@ -45,7 +43,7 @@ type Mutation {
 }
 
 type Subscription {
-  eventCreated(user_id: ID): Event!
+  eventCreated(user: ID): Event!
   eventUpdated: Event!
   eventDeleted: Event!
   eventCount: Int!

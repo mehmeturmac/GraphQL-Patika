@@ -40,7 +40,7 @@ function Event() {
         Location: {data.event.location.name}
       </Divider>
       <p>{data.event.location.desc}</p>
-      <Participants event_id={id} />
+      <Participants event={id} />
     </div>
   );
 }

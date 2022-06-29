@@ -1,8 +1,6 @@
-const { users, events } = require('../../data.json');
-
 const Participant = {
-  user: (parent) => users.find((user) => user.id == parent.user_id),
-  event: (parent) => events.find((event) => event.id == parent.event_id),
+  user: async (parent, __, { db }) => await db.User.findById(parent.user),
+  event: async (parent, __, { db }) => await db.Event.findById(parent.event),
 };
 
 module.exports.Participant = Participant;

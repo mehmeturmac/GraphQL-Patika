@@ -4,6 +4,7 @@ import { Button, Form, Input, DatePicker, TimePicker, Select, message } from 'an
 import { useQuery, useMutation } from '@apollo/client';
 import styles from './styles.module.css';
 import { GET_USERS, GET_LOCATIONS, NEW_EVENT } from './queries';
+import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -11,6 +12,7 @@ function NewEventForm() {
   const { loading: users_loading, data: users_data } = useQuery(GET_USERS);
   const { loading: locations_loading, data: locations_data } = useQuery(GET_LOCATIONS);
   const [saveEvent, { loading }] = useMutation(NEW_EVENT);
+  const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
     try {
@@ -19,17 +21,18 @@ function NewEventForm() {
         variables: {
           data: {
             title: values.title,
-            desc: values.title,
+            desc: values.description,
             date: moment(values.datepicker).format('YYYY-MM-DD'),
             from: moment(values.timepicker[0]).format('HH:mm'),
             to: moment(values.timepicker[1]).format('HH:mm'),
-            location_id: values.location_id,
-            user_id: values.user_id,
+            location: values.location,
+            user: values.user,
           },
         },
       });
       message.destroy();
       message.success('Event saved!', 4);
+      navigate('/');
     } catch (e) {
       console.log(e);
       message.destroy();
@@ -55,7 +58,7 @@ function NewEventForm() {
         <TimePicker.RangePicker disabled={loading} size="large" format="HH:mm" />
       </Form.Item>
 
-      <Form.Item name="location_id">
+      <Form.Item name="location">
         <Select
           disabled={locations_loading || loading}
           loading={locations_loading}
@@ -68,14 +71,14 @@ function NewEventForm() {
           {!locations_loading &&
             locations_data &&
             locations_data.locations.map((location) => (
-              <Option key={location.id} value={location.id}>
+              <Option key={location._id} value={location._id}>
                 {location.name}
               </Option>
             ))}
         </Select>
       </Form.Item>
 
-      <Form.Item name="user_id">
+      <Form.Item name="user">
         <Select
           disabled={users_loading || loading}
           loading={users_loading}
@@ -88,7 +91,7 @@ function NewEventForm() {
           {!users_loading &&
             users_data &&
             users_data.users.map((user) => (
-              <Option key={user.id} value={user.id}>
+              <Option key={user._id} value={user._id}>
                 {user.username}
               </Option>
             ))}
